@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Per Store - AirconEx</title>
+    <link rel="stylesheet" href="css/sales_performance.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Sales Department Sidebar -->
+    <div class="sales-sidebar">
+        <div class="sidebar-header">
+            <h3>Sales Department</h3>
+        </div>
+         <nav class="sidebar-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="sales_order_form.html" class="nav-link">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-text">Sales Order Form</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sales_order_logs.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">Sales Logs</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sales_unit_inventory.html" class="nav-link">
+                        <span class="nav-icon">📦</span>
+                        <span class="nav-text">Unit Inventory</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sales_performance.html" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        <span class="nav-text">Sales Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sales_performance_per_agent.html" class="nav-link">
+                        <span class="nav-icon">🏆</span>
+                        <span class="nav-text">Performance Per Agent</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="sales_performance_per_store.html" class="nav-link">
+                        <span class="nav-icon">🏪</span>
+                        <span class="nav-text">Performance Per Store</span>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="sales_performance_brand.html" class="nav-link">
+                        <span class="nav-icon">🏷️</span>
+                        <span class="nav-text">Brand Performance</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <span class="user-icon">👤</span>
+                <span class="user-name">Sales Employee</span>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()">
+                <span class="logout-icon">🚪</span>
+                <span>Log Out</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="excel-container">
+            <!-- Header Section -->
+            <div class="excel-header">
+                <div class="header-content">
+                    <h1>PERFORMANCE PER STORE</h1>
+                    <p>Individual Store Performance Analysis</p>
+                    <div class="header-info">
+                        <span id="currentDate"></span> | <span>Real-time Data</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Controls -->
+            <div class="analytics-controls">
+                <div class="control-row">
+                    <div class="period-section">
+                        <label>Period:</label>
+                        <select id="periodFilter" class="filter-select">
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month" selected>This Month</option>
+                            <option value="quarter">This Quarter</option>
+                            <option value="year">This Year</option>
+                        </select>
+                    </div>
+                    <div class="channel-section">
+                        <label>Channel:</label>
+                        <select id="channelFilter" class="filter-select">
+                            <option value="all" selected>All Channels</option>
+                            <option value="retail">Retail Only</option>
+                            <option value="subdealer">Subdealer Only</option>
+                        </select>
+                    </div>
+                    <div class="refresh-section">
+                        <button type="button" class="btn-refresh" onclick="refreshData()">
+                            🔄 Refresh Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Content -->
+            <div class="analytics-content">
+                <!-- A. TY vs LY Performance Table -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>A. TY vs LY - Store Performance Comparison</h3>
+                        <span class="section-info">This Year vs Last Year performance by store</span>
+                    </div>
+                    <table class="analytics-table" id="storeTYvsLYTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="col-agent">Store Name</th>
+                                <th rowspan="2" class="col-channel-filter">Channel</th>
+                                <th colspan="2" class="col-group">This Year (TY)</th>
+                                <th colspan="2" class="col-group">Last Year (LY)</th>
+                                <th colspan="2" class="col-group">Growth</th>
+                                <th rowspan="2" class="col-rank">Rank</th>
+                            </tr>
+                            <tr>
+                                <th class="col-units">Units</th>
+                                <th class="col-revenue">Revenue</th>
+                                <th class="col-units">Units</th>
+                                <th class="col-revenue">Revenue</th>
+                                <th class="col-growth">Units %</th>
+                                <th class="col-growth">Revenue %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="storeTYvsLYTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- A. TY vs LY Chart -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>A. TY vs LY - Visual Comparison</h3>
+                        <span class="section-info">Store performance bar chart</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="storeTYvsLYChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- B. TY vs Achievement Rate Table -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>B. TY vs Achievement Rate - Target Performance</h3>
+                        <span class="section-info">Current year performance vs targets</span>
+                    </div>
+                    <table class="analytics-table" id="achievementRateTable">
+                        <thead>
+                            <tr>
+                                <th class="col-agent">Store Name</th>
+                                <th class="col-channel-filter">Channel</th>
+                                <th class="col-actual">Actual TY</th>
+                                <th class="col-target">Target</th>
+                                <th class="col-variance">Variance</th>
+                                <th class="col-achievement">Achievement %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="achievementRateTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- B. Achievement Rate Chart -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>B. Achievement Rate - Target vs Actual</h3>
+                        <span class="section-info">Achievement percentage by store</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="achievementRateChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- C. Unit Sold Analysis Table -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>C. Units Sold - Volume Analysis</h3>
+                        <span class="section-info">Unit sales performance by store</span>
+                    </div>
+                    <table class="analytics-table" id="unitsSoldTable">
+                        <thead>
+                            <tr>
+                                <th class="col-agent">Store Name</th>
+                                <th class="col-channel-filter">Channel</th>
+                                <th class="col-units-ty">Units TY</th>
+                                <th class="col-units-ly">Units LY</th>
+                                <th class="col-units-growth">Growth</th>
+                                <th class="col-units-trend">Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unitsSoldTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- C. Units Sold Chart -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>C. Units Distribution - Market Share</h3>
+                        <span class="section-info">Units sold by store</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="unitsSoldChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- D. Sales Orders (S.O.) Analysis Table -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>D. Sales Orders (S.O.) - Order Analysis</h3>
+                        <span class="section-info">Sales order patterns by store</span>
+                    </div>
+                    <table class="analytics-table" id="salesOrdersTable">
+                        <thead>
+                            <tr>
+                                <th class="col-agent">Store Name</th>
+                                <th class="col-channel-filter">Channel</th>
+                                <th class="col-orders-ty">Orders TY</th>
+                                <th class="col-orders-ly">Orders LY</th>
+                                <th class="col-orders-growth">Growth</th>
+                                <th class="col-conversion">Conversion Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesOrdersTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- D. Sales Orders Chart -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>D. Sales Orders Performance</h3>
+                        <span class="section-info">Orders and conversion analysis</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="salesOrdersChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- E. Transaction Size Analysis Table -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>E. Transaction Size - Average Order Value</h3>
+                        <span class="section-info">Purchase behavior analysis by store</span>
+                    </div>
+                    <table class="analytics-table" id="transactionSizeTable">
+                        <thead>
+                            <tr>
+                                <th class="col-agent">Store Name</th>
+                                <th class="col-channel-filter">Channel</th>
+                                <th class="col-avg-order-ty">Avg Order TY</th>
+                                <th class="col-avg-order-ly">Avg Order LY</th>
+                                <th class="col-order-change">Change</th>
+                                <th class="col-order-trend">Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionSizeTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- E. Transaction Size Chart -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>E. Transaction Size Trends</h3>
+                        <span class="section-info">Average order value trends</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="transactionSizeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- F. Top 10 Performers -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>F. Top 10 Performers - Rankings</h3>
+                        <span class="section-info">Best performing stores across all metrics</span>
+                    </div>
+                    <table class="analytics-table" id="top10Table">
+                        <thead>
+                            <tr>
+                                <th class="col-rank">Rank</th>
+                                <th class="col-agent">Store Name</th>
+                                <th class="col-channel-filter">Channel</th>
+                                <th class="col-revenue">Total Revenue</th>
+                                <th class="col-units">Total Units</th>
+                                <th class="col-growth">Revenue Growth</th>
+                                <th class="col-achievement">Achievement</th>
+                            </tr>
+                        </thead>
+                        <tbody id="top10TableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Performance Distribution Chart -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>Store Performance Distribution</h3>
+                        <span class="section-info">Revenue distribution by store</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="performanceDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="status-info">
+                    <span id="status-text">Store performance loaded successfully</span>
+                    <span id="lastUpdated">Last updated: Never</span>
+                    <span>AirconEx Store Performance v1.0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/sales_performance_per_store.js"></script>
+</body>
+</html>

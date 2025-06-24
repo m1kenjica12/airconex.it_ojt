@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Analytics - AirconEx</title>
+    <link rel="stylesheet" href="css/sales_performance.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Sales Department Sidebar -->
+    <div class="sales-sidebar">
+        <div class="sidebar-header">
+            <h3>Sales Department</h3>
+        </div>
+       <nav class="sidebar-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="sales_order_form.html" class="nav-link">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-text">Sales Order Form</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sales_order_logs.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">Sales Logs</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sales_unit_inventory.html" class="nav-link">
+                        <span class="nav-icon">📦</span>
+                        <span class="nav-text">Unit Inventory</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="sales_performance.html" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        <span class="nav-text">Sales Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sales_performance_per_agent.html" class="nav-link">
+                        <span class="nav-icon">🏆</span>
+                        <span class="nav-text">Performance Per Agent</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sales_performance_per_store.html" class="nav-link">
+                        <span class="nav-icon">🏪</span>
+                        <span class="nav-text">Performance Per Store</span>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="sales_performance_brand.html" class="nav-link">
+                        <span class="nav-icon">🏷️</span>
+                        <span class="nav-text">Brand Performance</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <span class="user-icon">👤</span>
+                <span class="user-name">Sales Employee</span>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()">
+                <span class="logout-icon">🚪</span>
+                <span>Log Out</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="excel-container">
+            <!-- Header Section -->
+            <div class="excel-header">
+                <div class="header-content">
+                    <h1>SALES ANALYTICS DASHBOARD</h1>
+                    <p>Sales Performance by Channel - TY vs LY Analysis</p>
+                    <div class="header-info">
+                        <span id="currentDate"></span> | <span>Real-time Data</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Controls -->
+            <div class="analytics-controls">
+                <div class="control-row">
+                    <div class="period-section">
+                        <label>Period:</label>
+                        <select id="periodFilter" class="filter-select">
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month" selected>This Month</option>
+                            <option value="quarter">This Quarter</option>
+                            <option value="year">This Year</option>
+                        </select>
+                    </div>
+                    <div class="refresh-section">
+                        <button type="button" class="btn-refresh" onclick="refreshData()">
+                            🔄 Refresh Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Content -->
+            <div class="analytics-content">
+                <!-- TY vs LY Performance Table -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>A. TY vs LY - Sales Performance by Channel</h3>
+                        <span class="section-info">This Year vs Last Year comparison</span>
+                    </div>
+                    <table class="analytics-table" id="tyVsLyTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="col-channel">Sales Channel</th>
+                                <th colspan="2" class="col-group">This Year (TY)</th>
+                                <th colspan="2" class="col-group">Last Year (LY)</th>
+                                <th colspan="2" class="col-group">Growth</th>
+                            </tr>
+                            <tr>
+                                <th class="col-units">Units</th>
+                                <th class="col-revenue">Revenue</th>
+                                <th class="col-units">Units</th>
+                                <th class="col-revenue">Revenue</th>
+                                <th class="col-growth">Units %</th>
+                                <th class="col-growth">Revenue %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tyVsLyTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- A. TY vs LY Chart -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>A. TY vs LY - Visual Comparison</h3>
+                        <span class="section-info">Bar chart comparison</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="tyVsLyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- TY vs Target Performance -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>B. TY vs Target - Budget Performance</h3>
+                        <span class="section-info">Actual vs Planned targets</span>
+                    </div>
+                    <table class="analytics-table" id="tyVsTargetTable">
+                        <thead>
+                            <tr>
+                                <th class="col-channel">Sales Channel</th>
+                                <th class="col-actual">Actual TY</th>
+                                <th class="col-target">Target</th>
+                                <th class="col-variance">Variance</th>
+                                <th class="col-achievement">Achievement %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tyVsTargetTableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- B. Target Achievement Chart -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>B. Target Achievement - Progress Analysis</h3>
+                        <span class="section-info">Achievement percentage by channel</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="targetAchievementChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Units Sold vs LY -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>C. Units Sold vs LY - Volume Analysis</h3>
+                        <span class="section-info">Unit sales comparison</span>
+                    </div>
+                    <table class="analytics-table" id="unitsVsLyTable">
+                        <thead>
+                            <tr>
+                                <th class="col-channel">Sales Channel</th>
+                                <th class="col-units-ty">Units TY</th>
+                                <th class="col-units-ly">Units LY</th>
+                                <th class="col-units-growth">Growth</th>
+                                <th class="col-units-trend">Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unitsVsLyTableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- C. Units Sold Chart -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>C. Units Distribution - Market Share</h3>
+                        <span class="section-info">Units sold by channel</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="unitsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Customer Count vs LY -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>D. Customer Count vs LY - Customer Growth</h3>
+                        <span class="section-info">Customer acquisition analysis</span>
+                    </div>
+                    <table class="analytics-table" id="customerCountTable">
+                        <thead>
+                            <tr>
+                                <th class="col-channel">Sales Channel</th>
+                                <th class="col-customers-ty">Customers TY</th>
+                                <th class="col-customers-ly">Customers LY</th>
+                                <th class="col-customers-growth">Growth</th>
+                                <th class="col-customers-new">New Customers</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerCountTableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- D. Customer Count Chart -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>D. Customer Growth - TY vs LY</h3>
+                        <span class="section-info">Customer count comparison</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="customerChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Transaction Size Analysis -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>E. Transaction Size - Average Order Value</h3>
+                        <span class="section-info">Purchase behavior analysis</span>
+                    </div>
+                    <table class="analytics-table" id="transactionSizeTable">
+                        <thead>
+                            <tr>
+                                <th class="col-channel">Sales Channel</th>
+                                <th class="col-avg-order-ty">Avg Order TY</th>
+                                <th class="col-avg-order-ly">Avg Order LY</th>
+                                <th class="col-order-change">Change</th>
+                                <th class="col-order-trend">Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionSizeTableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- E. Transaction Size Chart -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>E. Transaction Size Trends</h3>
+                        <span class="section-info">Average order value trends</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="transactionSizeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Sales Orders Analysis -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>F. Sales Orders (S.O.) - Order Analysis</h3>
+                        <span class="section-info">Sales order patterns and trends</span>
+                    </div>
+                    <table class="analytics-table" id="salesOrdersTable">
+                        <thead>
+                            <tr>
+                                <th class="col-channel">Sales Channel</th>
+                                <th class="col-orders-ty">Orders TY</th>
+                                <th class="col-orders-ly">Orders LY</th>
+                                <th class="col-orders-growth">Growth</th>
+                                <th class="col-conversion">Conversion Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesOrdersTableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- F. Sales Orders Chart -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>F. Sales Orders Performance</h3>
+                        <span class="section-info">Orders and conversion analysis</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="salesOrdersChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Pie Charts Section -->
+                <div class="charts-section">
+                    <div class="charts-grid">
+                        <!-- Sales by Channel TY -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Sales by Channel (This Year)</h3>
+                                <span class="chart-info">Current year distribution</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="salesByChannelTYChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Sales by Channel LY -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Sales by Channel (Last Year)</h3>
+                                <span class="chart-info">Previous year comparison</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="salesByChannelLYChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Growth Comparison -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Revenue Growth by Channel</h3>
+                                <span class="chart-info">TY vs LY growth rates</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="growthComparisonChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Market Share Analysis -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Market Share Analysis</h3>
+                                <span class="chart-info">Channel contribution</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="marketShareChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="status-info">
+                    <span id="status-text">Analytics loaded successfully</span>
+                    <span id="lastUpdated">Last updated: Never</span>
+                    <span>Version 1.0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/sales_performance.js"></script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Performance - AirconEx</title>
+    <link rel="stylesheet" href="css/sales_performance.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Sales Department Sidebar -->
+    <div class="sales-sidebar">
+        <div class="sidebar-header">
+            <h3>Sales Department</h3>
+        </div>
+        <nav class="sidebar-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="sales_order_form.html" class="nav-link">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-text">Sales Order Form</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sales_order_logs.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">Sales Logs</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sales_unit_inventory.html" class="nav-link">
+                        <span class="nav-icon">📦</span>
+                        <span class="nav-text">Unit Inventory</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sales_performance.html" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        <span class="nav-text">Sales Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sales_performance_per_agent.html" class="nav-link">
+                        <span class="nav-icon">🏆</span>
+                        <span class="nav-text">Performance Per Agent</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sales_performance_per_store.html" class="nav-link">
+                        <span class="nav-icon">🏪</span>
+                        <span class="nav-text">Performance Per Store</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="sales_performance_brand.html" class="nav-link">
+                        <span class="nav-icon">🏷️</span>
+                        <span class="nav-text">Brand Performance</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <span class="user-icon">👤</span>
+                <span class="user-name">Sales Employee</span>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()">
+                <span class="logout-icon">🚪</span>
+                <span>Log Out</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="excel-container">
+            <!-- Header Section -->
+            <div class="excel-header">
+                <div class="header-content">
+                    <h1>BRAND PERFORMANCE</h1>
+                    <p>Ranking per Brand, Cap</p>
+                    <div class="header-info">
+                        <span id="currentDate"></span> | <span>Real-time Data</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Controls -->
+            <div class="analytics-controls">
+                <div class="control-row">
+                    <div class="period-section">
+                        <label>Period:</label>
+                        <select id="periodFilter" class="filter-select">
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month" selected>This Month</option>
+                            <option value="quarter">This Quarter</option>
+                            <option value="year">This Year</option>
+                        </select>
+                    </div>
+                    <div class="refresh-section">
+                        <button type="button" class="btn-refresh" onclick="refreshData()">
+                            🔄 Refresh Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Content -->
+            <div class="analytics-content">
+                <!-- Ranking per Brand -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>Ranking per Brand</h3>
+                        <span class="section-info">Brand performance ranking by revenue</span>
+                    </div>
+                    <table class="analytics-table" id="brandRankingTable">
+                        <thead>
+                            <tr>
+                                <th class="col-rank">Rank</th>
+                                <th class="col-agent">Brand</th>
+                                <th class="col-units">Units</th>
+                                <th class="col-revenue">Revenue</th>
+                                <th class="col-achievement">Market Share</th>
+                            </tr>
+                        </thead>
+                        <tbody id="brandRankingTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Ranking per Cap -->
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h3>Ranking per Cap</h3>
+                        <span class="section-info">Capacity performance ranking by revenue</span>
+                    </div>
+                    <table class="analytics-table" id="capRankingTable">
+                        <thead>
+                            <tr>
+                                <th class="col-rank">Rank</th>
+                                <th class="col-agent">Capacity (HP)</th>
+                                <th class="col-units">Units</th>
+                                <th class="col-revenue">Revenue</th>
+                                <th class="col-achievement">Market Share</th>
+                            </tr>
+                        </thead>
+                        <tbody id="capRankingTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="status-info">
+                    <span id="status-text">Brand performance loaded successfully</span>
+                    <span id="lastUpdated">Last updated: Never</span>
+                    <span>AirconEx Brand Performance v1.0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/sales_performance_brand.js"></script>
+</body>
+</html>
